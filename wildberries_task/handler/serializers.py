@@ -1,5 +1,3 @@
-from typing import List
-from pydantic import BaseModel
 from django.core.validators import FileExtensionValidator
 from rest_framework import serializers
 
@@ -18,13 +16,3 @@ class InputSerializer(serializers.Serializer):
             raise serializers.ValidationError("You can input only 1 item (article or file).")
 
         return attrs
-
-
-class ArticleModel(BaseModel):
-    article: int
-    brand: str
-    title: str
-
-
-class ArticleListModel(BaseModel):
-    items: List[ArticleModel]

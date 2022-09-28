@@ -2,7 +2,7 @@ import logging
 
 import pandas as pd
 
-logger = logging.getLogger("__name__")
+logger = logging.getLogger(__name__)
 
 
 def make_article_list(file) -> list:
