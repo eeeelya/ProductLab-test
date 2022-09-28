@@ -4,7 +4,7 @@ import logging
 
 from rest_framework import status
 
-logger = logging.getLogger("__name__")
+logger = logging.getLogger(__name__)
 
 
 async def parse_data(article):
@@ -31,7 +31,7 @@ async def parse_data(article):
             logger.error(f'Error with ClientSession: {error}.')
 
 
-def make_request(articles):
+def run_tasks(articles):
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
 
