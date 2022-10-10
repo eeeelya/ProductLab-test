@@ -4,8 +4,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from handler.parser import run_tasks
-from handler.schemas import ArticleListModel, ArticleModel
+from handler.parser import run_tasks, run_single_task
 from handler.serializers import InputSerializer
 from handler.utils import make_article_list
 
@@ -21,19 +20,15 @@ class HandlerView(APIView):
             articles = make_article_list(request.FILES.get("article_file"))
 
             if not articles:
-                return Response({"detail": "Articles not found."}, status=status.HTTP_404_NOT_FOUND)
+                return Response({"detail": "Articles in file not found."}, status=status.HTTP_404_NOT_FOUND)
 
             result = run_tasks(articles)
-
-            ArticleListModel(items=result)
 
             return Response(result, status=status.HTTP_200_OK)
 
         if "single_article" in article_serializer.data:
-            result = run_tasks([article_serializer.data["single_article"]])
+            result = run_single_task(article_serializer.data["single_article"])
 
-            ArticleModel(**result[0])
+            return Response(result, status=status.HTTP_200_OK)
 
-            return Response(result[0], status=status.HTTP_200_OK)
-
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+        return Response({"detail": "Input data not found."}, status=status.HTTP_400_BAD_REQUEST)

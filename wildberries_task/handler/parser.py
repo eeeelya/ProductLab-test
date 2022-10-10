@@ -3,6 +3,9 @@ import aiohttp
 import logging
 
 from rest_framework import status
+from pydantic import ValidationError
+
+from handler.models import ArticleModel
 
 logger = logging.getLogger(__name__)
 
@@ -15,20 +18,21 @@ async def parse_data(article):
             async with session.get(url) as response:
                 if response.status == status.HTTP_200_OK:
                     result = await response.json()
-                    return {
-                        'article': article,
-                        'brand': result.get('selling').get('brand_name'),
-                        'title': result.get('imt_name'),
-                    }
+
+                    try:
+                        item_info = ArticleModel.parse_obj(result)
+                        return item_info.dict()
+                    except ValidationError as err:
+                        logger.error(f"Error - {err}.")
+
                 else:
-                    logger.info(f'Article {article} not found.')
-                    return {
-                        'article': article,
-                        'brand': "Not found",
-                        'title': "Not found",
-                    }
+                    logger.info(f"Article {article} not found.")
+                    item_info = ArticleModel(nm_id=article)
+
+                    return item_info.dict()
+
         except aiohttp.ClientError as error:
-            logger.error(f'Error with ClientSession: {error}.')
+            logger.error(f"Error with ClientSession: {error}.")
 
 
 def run_tasks(articles):
@@ -45,3 +49,10 @@ def run_tasks(articles):
     return result
 
 
+def run_single_task(article):
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+
+    result = loop.run_until_complete(parse_data(article))
+
+    return result
