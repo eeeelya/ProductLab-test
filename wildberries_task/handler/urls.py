@@ -1,6 +1,7 @@
 from django.urls import path
-from handler.views import HandlerView
+from handler.views import HandlerFileView, HandlerArticleView
 
 urlpatterns = [
-    path("handler/", HandlerView.as_view()),
+    path("handle-file/", HandlerFileView.as_view()),
+    path("handle-article/", HandlerArticleView.as_view())
 ]

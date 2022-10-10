@@ -5,7 +5,7 @@ from pydantic import BaseModel
 logger = logging.getLogger(__name__)
 
 
-class ArticleModel(BaseModel):
+class ItemModel(BaseModel):
     nm_id: int
     brand_name: str = "Not found"
     imt_name: str = "Not found"
